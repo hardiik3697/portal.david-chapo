@@ -50,6 +50,7 @@ class PaymentOnlineController extends Controller
                                 'p.recharge_status', 'p.payment_type', 'cp.username', 'cp.platform_id', 'pt.name as platform')
                             ->leftJoin('customers_platform as cp', 'cp.id', '=', 'p.customer_platform_id')
                             ->leftJoin('platforms as pt', 'pt.id', '=', 'cp.platform_id')
+                            ->where(['payment_type' => 'stripe'])
                             ->orderBy('id', 'desc')
                             ->get();
 
