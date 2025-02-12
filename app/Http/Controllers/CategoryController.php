@@ -3,16 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\File;
 
-use App\Http\Requests\PlatformRequest;
-use App\Models\Platform;
+use App\Http\Requests\CategoryRequest;
+use App\Models\Category;
 
-class PlatformController extends Controller
+class CategoryController extends Controller
 {
     /**
      * index
@@ -20,18 +19,18 @@ class PlatformController extends Controller
     public function index(Request $request): mixed
     {
         if ($request->ajax()) {
-            $data = Platform::orderBy('id', 'desc')->get();
+            $data = Category::orderBy('id', 'desc')->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($data) {
                     return ' <div class="btn-group btn-sm">
-                                        <a href="' . route('platform.view', ['id' => base64_encode($data->id)]) . '" class="mx-2">
+                                        <a href="' . route('category.view', ['id' => base64_encode($data->id)]) . '" class="mx-2">
                                             <button type="button" class="btn btn-sm btn-icon btn-outline-secondary rounded-pill waves-effect">
                                                 <i class="ri-eye-line"></i>
                                             </button>
                                         </a>
-                                        <a href="' . route('platform.edit', ['id' => base64_encode($data->id)]) . '" class="mx-2">
+                                        <a href="' . route('category.edit', ['id' => base64_encode($data->id)]) . '" class="mx-2">
                                             <button type="button" class="btn btn-sm btn-icon btn-outline-secondary rounded-pill waves-effect">
                                                 <i class="ri-file-edit-line"></i>
                                             </button>
@@ -61,31 +60,23 @@ class PlatformController extends Controller
                 })
 
                 ->editColumn('name', function ($data) {
-                    $url = route('platform.view', ['id' => base64_encode($data->id)]);
+                    $url = route('category.view', ['id' => base64_encode($data->id)]);
                     return "<a href='" . $url . "'>" . $data->name . "</a>";
                 })
 
-                ->editColumn('frontend_url', function ($data) {
-                    return "<a href='" . $data->frontend_url . "' target='_blank'>" . $data->frontend_url . "</a>";
-                })
-
-                ->editColumn('logo', function ($data) {
-                    return "<img src='" . __path('platform') . $data['logo'] . "' width='50px'>";
-                })
-
-                ->rawColumns(['action', 'status', 'logo', 'name', 'frontend_url'])
+                ->rawColumns(['action', 'name', 'status'])
                 ->make(true);
         }
 
-        return view('platform.index');
+        return view('category.index');
     }
-
+    
     /**
-     * create
+     * create  
      */
     public function create()
     {
-        return view('platform.manage');
+        return view('category.manage');
     }
 
     /**
@@ -94,9 +85,9 @@ class PlatformController extends Controller
     public function edit(Request $request)
     {
         $id = base64_decode($request->id);
-        $data = Platform::where(['id' => $id])->first();
+        $data = Category::where(['id' => $id])->first();
 
-        return view('platform.manage', compact('data'));
+        return view('category.manage', compact('data'));
     }
 
     /**
@@ -105,49 +96,32 @@ class PlatformController extends Controller
     public function view(Request $request)
     {
         $id = base64_decode($request->id);
-        $data = Platform::where(['id' => $id])->first();
+        $data = Category::where(['id' => $id])->first();
 
-        return view('platform.view', compact('data'));
+        return view('category.view', compact('data'));
     }
+
     /**
      * insert or update
      */
-    public function store(PlatformRequest $request) {
+    public function store(CategoryRequest $request) {
         $data = $request->all();
         $data['created_by'] = auth()->user()->id;
-        dd($request->file('image'));
-        if ($request->hasFile('logo')) {
-            $logo = $request->file('logo');
-            $logoName = time() . '_logo.' . $logo->getClientOriginalExtension();
-            $logo->move(public_path('uploads/platform'), $logoName);
-            $data['logo'] = $logoName;
-        }
-
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_image.' . $image->getClientOriginalExtension();
-            $image->move(public_path('uploads/platform'), $imageName);
-            $data['image'] = $imageName;
-        }
 
         if ($request->has('id')) {
-            $platform = Platform::find($request->id);
-            if ($platform) {
-                if ($request->hasFile('logo') && $platform->logo) {
-                    Storage::disk('public')->delete('uploads/platform/' . $platform->logo);
-                }
-                if ($request->hasFile('image') && $platform->image) {
-                    Storage::disk('public')->delete('uploads/platform/' . $platform->image);
-                }
-                $platform->update($data);
-                return redirect()->route('platform.index')->with('success', 'Data has been updated successfully!');
+            $category = Category::find($request->id);
+
+            if ($category) {
+                $category->update($data);
+
+                return redirect()->route('category.index')->with('success', 'Data has been updated successfully!');
             } else {
                 return redirect()->back()->with('error', 'Data could not be found!');
             }
         } else {
-            $process = Platform::create($data);
+            $process = Category::create($data);
             if ($process)
-                return redirect()->route('platform.index')->with('success', 'Data has been saved successfully!');
+                return redirect()->route('category.index')->with('success', 'Data has been saved successfully!');
             else
                 return redirect()->back()->with('error', 'Data could not be saved!');
         }
@@ -162,13 +136,13 @@ class PlatformController extends Controller
             $id = base64_decode($request->id);
             $status = $request->status;
 
-            $data = Platform::where(['id' => $id])->first();
+            $data = Category::where(['id' => $id])->first();
 
             if (!empty($data)) {
                 if ($status == 'delete') {
-                    $process = Platform::where(['id' => $id])->delete();
+                    $process = Category::where(['id' => $id])->delete();
                 } else {
-                    $process = Platform::where(['id' => $id])->update(['status' => $status, 'updated_by' => auth()->user()->id]);
+                    $process = Category::where(['id' => $id])->update(['status' => $status, 'updated_by' => auth()->user()->id]);
                 }
 
                 if ($process)
@@ -181,5 +155,5 @@ class PlatformController extends Controller
         } else {
             return response()->json(['code' => 201]);
         }
-    }    
+    }   
 }

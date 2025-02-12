@@ -2,18 +2,17 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\SettingController;
-use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PlatformController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentOnlineController;
+use App\Http\Controllers\CategoryController;
 
-
-// dd('here');
-/** Grouping routes under */
+/** Grouping under */
 Route::group(['middleware' => ['prevent-back-history']], function () {
     Route::group(['middleware' => ['guest']], function () {
         /** Authentication */
@@ -28,11 +27,11 @@ Route::group(['middleware' => ['prevent-back-history']], function () {
     Route::group(['middleware' => ['auth']], function () {
         Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
-        /** Backend Dashboard */
+        /** Dashboard */
             Route::get('/', [IndexController::class, 'index'])->name('index');
-        /** Backend Dashboard */
+        /** Dashboard */
 
-        /** Setting Routes */
+        /** Setting */
             Route::controller(SettingController::class)
                     ->prefix('/setting')
                     ->name('setting.')
@@ -40,51 +39,9 @@ Route::group(['middleware' => ['prevent-back-history']], function () {
                         Route::get('/{param?}', 'index')->name('index');
                         Route::post('/update', 'update')->name('update');
                     });
-        /** Setting Routes */
+        /** Setting */
 
-        /** Users Routes */
-            Route::controller(UserController::class)
-                    ->prefix('/users')
-                    ->name('users.')
-                    ->group(function () {
-                        Route::any('/', 'index')->name('index');
-                        Route::get('/create', 'create')->name('create');
-                        Route::match(['post', 'patch'], '/store', 'store')->name('store');
-                        Route::get('/edit/{id}', 'edit')->name('edit');
-                        Route::get('/view/{id}', 'view')->name('view');
-                        Route::post('/status', 'status')->name('status');
-                    });
-        /** Users Routes */
-
-        /** Customers Routes */
-            Route::controller(CustomerController::class)
-                    ->prefix('/customers')
-                    ->name('customers.')
-                    ->group(function () {
-                        Route::any('/', 'index')->name('index');
-                        Route::get('/create', 'create')->name('create');
-                        Route::match(['post', 'patch'], '/store', 'store')->name('store');
-                        Route::get('/edit/{id}', 'edit')->name('edit');
-                        Route::get('/view/{id}', 'view')->name('view');
-                        Route::post('/status', 'status')->name('status');
-                    });
-        /** Customers Routes */
-
-        /** Payments Routes */
-            Route::controller(PaymentController::class)
-                    ->prefix('/payment')
-                    ->name('payment.')
-                    ->group(function () {
-                        Route::any('/', 'index')->name('index');
-                        Route::get('/create', 'create')->name('create');
-                        Route::match(['post', 'patch'], '/store', 'store')->name('store');
-                        Route::get('/edit/{id}', 'edit')->name('edit');
-                        Route::get('/view/{id}', 'view')->name('view');
-                        Route::post('/status', 'status')->name('status');
-                    });
-        /** Payments Routes */
-
-        /** Platform Routes */
+        /** Platform */
             Route::controller(PlatformController::class)
                     ->prefix('/platform')
                     ->name('platform.')
@@ -96,9 +53,51 @@ Route::group(['middleware' => ['prevent-back-history']], function () {
                         Route::get('/view/{id}', 'view')->name('view');
                         Route::post('/status', 'status')->name('status');
                     });
-        /** Platform Routes */
+        /** Platform */
 
-        /** Payment-online Routes */
+        /** Users */
+            Route::controller(UserController::class)
+                    ->prefix('/users')
+                    ->name('users.')
+                    ->group(function () {
+                        Route::any('/', 'index')->name('index');
+                        Route::get('/create', 'create')->name('create');
+                        Route::match(['post', 'patch'], '/store', 'store')->name('store');
+                        Route::get('/edit/{id}', 'edit')->name('edit');
+                        Route::get('/view/{id}', 'view')->name('view');
+                        Route::post('/status', 'status')->name('status');
+                    });
+        /** Users */
+
+        /** Customers */
+            Route::controller(CustomerController::class)
+                    ->prefix('/customers')
+                    ->name('customers.')
+                    ->group(function () {
+                        Route::any('/', 'index')->name('index');
+                        Route::get('/create', 'create')->name('create');
+                        Route::match(['post', 'patch'], '/store', 'store')->name('store');
+                        Route::get('/edit/{id}', 'edit')->name('edit');
+                        Route::get('/view/{id}', 'view')->name('view');
+                        Route::post('/status', 'status')->name('status');
+                    });
+        /** Customers */
+
+        /** Payments */
+            Route::controller(PaymentController::class)
+                    ->prefix('/payment')
+                    ->name('payment.')
+                    ->group(function () {
+                        Route::any('/', 'index')->name('index');
+                        Route::get('/create', 'create')->name('create');
+                        Route::match(['post', 'patch'], '/store', 'store')->name('store');
+                        Route::get('/edit/{id}', 'edit')->name('edit');
+                        Route::get('/view/{id}', 'view')->name('view');
+                        Route::post('/status', 'status')->name('status');
+                    });
+        /** Payments */
+
+        /** Payment-online */
             Route::controller(PaymentOnlineController::class)
                     ->prefix('/paymentOnline')
                     ->name('paymentOnline.')
@@ -107,7 +106,21 @@ Route::group(['middleware' => ['prevent-back-history']], function () {
                         Route::any('/{id?}', 'index')->name('index');
                         Route::get('/view/{id}', 'view')->name('view');
                     });
-        /** Payment-online Routes */
+        /** Payment-online */
+
+        /** Category */
+            Route::controller(CategoryController::class)
+                    ->prefix('/category')
+                    ->name('category.')
+                    ->group(function () {
+                        Route::any('/', 'index')->name('index');
+                        Route::get('/create', 'create')->name('create');
+                        Route::match(['post', 'patch'], '/store', 'store')->name('store');
+                        Route::get('/edit/{id}', 'edit')->name('edit');
+                        Route::get('/view/{id}', 'view')->name('view');
+                        Route::post('/status', 'status')->name('status');
+                    });
+        /** Category */
 
         /** Random route to login route */
             Route::get("{path}", function () { return redirect()->route('index'); })->where('path', '.+');

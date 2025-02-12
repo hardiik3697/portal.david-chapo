@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder{
             SettingSeeder::class,
             StripeSeeder::class,
             PlatformSeeder::class,
+            CategorySeeder::class,
             // CustomerSeeder::class,
             // CustomerPlatformSeeder::class,
             // PaymentSeeder::class,

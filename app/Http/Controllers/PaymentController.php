@@ -309,7 +309,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Status
+     * status
      */
     public function status(Request $request){
         if (!empty($request->all())) {

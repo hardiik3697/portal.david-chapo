@@ -74,7 +74,7 @@
 
                     <div class="col-md-6">
                         <button type="submit" class="btn rounded-pill btn-outline-primary waves-effect">Submit</button>
-                        <a href="{{ route('admin.platform.index') }}"><button type="button" class="btn rounded-pill btn-outline-secondary waves-effect">Cancel</button></a>
+                        <a href="{{ route('platform.index') }}"><button type="button" class="btn rounded-pill btn-outline-secondary waves-effect">Cancel</button></a>
                     </div>
                 </div>
             </form>

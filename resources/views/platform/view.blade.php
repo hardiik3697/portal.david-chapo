@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="col-md-6">
-                    <a href="{{ route('admin.platform.index') }}"><button type="button" class="btn rounded-pill btn-outline-secondary waves-effect">Cancel</button></a>
+                    <a href="{{ route('platform.index') }}"><button type="button" class="btn rounded-pill btn-outline-secondary waves-effect">Cancel</button></a>
                 </div>
             </div>
         </div>
