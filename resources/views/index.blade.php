@@ -12,6 +12,27 @@
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="row g-6">
+        <div class="col-md-12 col-md-12">
+            <div class="card">
+                <div class="d-flex align-items-start row">
+                    <div class="col-md-6 text-center text-md-start order-2 order-md-1">
+                        <div class="card-body pb-0 px-0 pt-2">
+                            <img src="{{ asset('assets/img/illustrations/trophy.png') }}" height="186" class="scaleX-n1-rtl" alt="View Profile" data-app-light-img="illustrations/trophy.png" data-app-dark-img="illustrations/trophy.png">
+                        </div>
+                    </div>
+                    <div class="col-md-6 order-1 order-md-2">
+                        <div class="card-body">
+                            <h4 class="card-title mb-4">Generate Link to send user</h4>
+                            <div class="form-floating form-floating-outline mb-6">
+                                <input type="" class="form-control" id="generate_link">
+                                <label for="generate_link">Link</label>
+                            </div>
+                            <a href="javascript:;" id="generateButton" class="btn btn-primary waves-effect waves-light">Generate Link</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="col-md-12 col-xxl-8">
             <div class="card">
                 <div class="d-flex align-items-end row">
@@ -81,4 +102,5 @@
 
 @section('scripts')
 <script src="{{ asset('assets/js/dashboards-analytics.js') }}"></script>
+@php $pageJs = ['resources/js/project/dashboard/generate.js']; @endphp
 @endsection

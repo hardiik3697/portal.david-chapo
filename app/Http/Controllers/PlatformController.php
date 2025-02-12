@@ -115,7 +115,7 @@ class PlatformController extends Controller
     public function store(PlatformRequest $request) {
         $data = $request->all();
         $data['created_by'] = auth()->user()->id;
-        dd($request->file('image'));
+
         if ($request->hasFile('logo')) {
             $logo = $request->file('logo');
             $logoName = time() . '_logo.' . $logo->getClientOriginalExtension();

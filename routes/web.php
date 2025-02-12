@@ -29,6 +29,7 @@ Route::group(['middleware' => ['prevent-back-history']], function () {
 
         /** Dashboard */
             Route::get('/', [IndexController::class, 'index'])->name('index');
+            Route::get('/generate', [IndexController::class, 'generate'])->name('generate');
         /** Dashboard */
 
         /** Setting */
