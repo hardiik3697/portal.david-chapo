@@ -67,31 +67,31 @@
                 <div>Payments</div>
             </a>
             <ul class="menu-sub">
-                <li class="menu-item {{ Request::routeIs('payment.index') ? 'active' : '' }}">
+                <li class="menu-item {{ Request::routeIs('payment.*') ? 'active' : '' }}">
                     <a href="{{ route('payment.index') }}" class="menu-link">
                         <div>All Payments</div>
                     </a>
                 </li>
-                <li class="menu-item {{ Request::routeIs('paymentOnline.index') ? 'active' : '' }}">
+                <li class="menu-item {{ Request::routeIs('paymentOnline.*') ? 'active' : '' }}">
                     <a href="{{ route('paymentOnline.index') }}" class="menu-link">
                         <div>Online Payment</div>
                     </a>
                 </li>
             </ul>
         </li>
-        <li class="menu-item {{ Request::routeIs('customers.index') ? 'active' : '' }}">
+        <li class="menu-item {{ Request::routeIs('customers.*') ? 'active' : '' }}">
             <a href="{{ route('customers.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons ri-group-line"></i>
                 <div>Customers</div>
             </a>
         </li>
-        <li class="menu-item {{ Request::routeIs('users.index') ? 'active' : '' }}">
+        <li class="menu-item {{ Request::routeIs('users.*') ? 'active' : '' }}">
             <a href="{{ route('users.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons ri-user-4-line"></i>
                 <div>Users</div>
             </a>
         </li>
-        <li class="menu-item {{ Request::routeIs('platform.index') ? 'active' : '' }}">
+        <li class="menu-item {{ Request::routeIs('platform.*') ? 'active' : '' }}">
             <a href="{{ route('platform.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons ri-gamepad-line"></i>
                 <div>Platform</div>
@@ -100,14 +100,14 @@
         <li class="menu-header mt-5">
             <span class="menu-header-text">Settings</span>
         </li>
-        <li class="menu-item {{ Request::routeIs('setting.index') ? 'active' : '' }}">
+        <li class="menu-item {{ Request::routeIs('setting.*') ? 'active' : '' }}">
             <a href="{{ route('setting.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons ri-settings-4-line"></i>
                 <div>Settings</div>
             </a>
         </li>
         <li class="menu-item">
-            <a href="{{ route('logout') }}" class="menu-link">
+            <a href="{{ route('logout') }}" class="menu-link bg-danger">
                 <i class="menu-icon tf-icons ri-logout-box-r-line"></i>
                 <div>Logout</div>
             </a>

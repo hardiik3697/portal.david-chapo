@@ -16,6 +16,9 @@
 <script src="{{ asset('assets/vendor/libs/toastr/toastr.js') }}" type="text/javascript"></script>
 <script>
     const APP_URL = "{{ __settings('SITE_URL') }}";
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken;
 </script>
 <script>
     toastr.options = {

@@ -34,9 +34,13 @@
                     <div class="col-md-6 order-1 order-md-2">
                         <div class="card-body">
                             <h4 class="card-title mb-4">Generate Link to send user</h4>
-                            <div class="form-floating form-floating-outline mb-6">
-                                <input type="" class="form-control" id="generate_link">
-                                <label for="generate_link">Link</label>
+                            <div class="input-group input-group-floating">
+                                <span class="input-group-text"><i class="ri-file-copy-line"></i></span>
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="generate_link" placeholder="Generate Link" aria-label="generate_link" aria-describedby="generate_link">
+                                    <label for="basic-addon21">Generate Link</label>
+                                </div>
+                                <span class="form-floating-focused"></span>
                             </div>
                             <a href="javascript:;" id="generateButton" class="btn btn-primary btn-group-justified waves-effect waves-light">Generate Link</a>
                         </div>

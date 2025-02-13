@@ -11,8 +11,7 @@ class SettingSeeder extends Seeder{
         $general = [
             'SITE_TITLE' => 'David Chapo',
             'SITE_TITLE_SF' => 'DC',
-            'SITE_FRONT_URL' => 'https://david-chapo.local',
-            'SITE_BACK_URL' => 'https://portal.david-chapo.local'
+            'SITE_URL' => 'https://portal.david-chapo.local',
         ];
 
         foreach($general as $key => $value){
