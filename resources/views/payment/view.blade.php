@@ -46,7 +46,7 @@
                                     <span class="fw-medium mx-2">Email:</span> <span>{{ $data->customer_email ?? 'john.doe@example.com' }}</span>
                                 </li>
                                 <li class="d-flex align-items-center mb-4">
-                                    <?php 
+                                    <?php
                                         if(!empty($data) && $data->customer_status == 'active'){
                                             $status = 'Active';
                                             $icon = 'ri-check-line';
@@ -62,7 +62,7 @@
                                         }
                                     ?>
                                     <i class="<?php echo $icon; ?> ri-24px"></i>
-                                    <span class="fw-medium mx-2">Status:</span> 
+                                    <span class="fw-medium mx-2">Status:</span>
                                     <span><?php echo $status; ?></span>
                                 </li>
                             </ul>
@@ -81,23 +81,24 @@
                             <ul class="list-unstyled">
                                 <li class="d-flex align-items-center mb-4">
                                     <?php
+                                        $type = '';
                                         if(!empty($data) && $data->payment_type == 'stripe'){
                                             $icon = 'ri-wallet-line';
                                             $type = 'Online';
-                                        }elseif(!empty($data) && $data->payment_type == ''){
+                                        }elseif(!empty($data) && ($data->payment_type == '' || $data->payment_type == 'cash')){
                                             $icon = 'ri-cash-fill';
                                             $type = 'Cash';
                                         }
                                     ?>
                                     <i class="<?= $icon ?> ri-24px"></i>
-                                    <span class="fw-medium mx-2">Payment Type:</span> 
-                                    <span><?= $type ?></span>
+                                    <span class="fw-medium mx-2">Payment Type:</span>
+                                    <span>{{ $type }}</span>
                                 </li>
                                 <li class="d-flex align-items-center mb-4">
                                     <i class="ri-login-circle-line ri-24px"></i>
-                                    <span class="fw-medium mx-2">Payment Status:</span> 
+                                    <span class="fw-medium mx-2">Payment Status:</span>
                                     <span>
-                                        <?php 
+                                        <?php
                                             if(!empty($data) && $data->payment_status){
                                                 echo ucfirst($data->payment_status);
                                             }else{
@@ -108,9 +109,9 @@
                                 </li>
                                 <li class="d-flex align-items-center mb-4">
                                     <i class="ri-logout-circle-line ri-24px"></i>
-                                    <span class="fw-medium mx-2">Recharge Status:</span> 
+                                    <span class="fw-medium mx-2">Recharge Status:</span>
                                     <span>
-                                        <?php 
+                                        <?php
                                             if(!empty($data) && $data->recharge_status){
                                                 echo ucfirst($data->recharge_status);
                                             }else{
@@ -121,8 +122,8 @@
                                 </li>
                                 <li class="d-flex align-items-center mb-4">
                                     <i class="ri-stack-line ri-24px"></i>
-                                    <span class="fw-medium mx-2">Payment ID:</span> 
-                                    <span><?php 
+                                    <span class="fw-medium mx-2">Payment ID:</span>
+                                    <span><?php
                                             if(!empty($data) && $data->payment_id){
                                                 echo chunk_split($data->payment_id, 20, "\n");
                                             }else{
