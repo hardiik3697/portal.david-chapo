@@ -43,7 +43,7 @@ class PaymentController extends Controller
                         $disabled = 'disabled="disabled"';
                     }
 
-                    return ' <div class="btn-group btn-sm">
+                    $return = '<div class="btn-group btn-sm">
                                         <a href="' . route('payment.view', ['id' => base64_encode($data->id)]) . '" class="mx-2">
                                             <button type="button" class="btn btn-sm btn-icon btn-outline-secondary rounded-pill waves-effect">
                                                 <i class="ri-eye-line"></i>
@@ -53,8 +53,10 @@ class PaymentController extends Controller
                                             <button type="button" class="btn btn-sm btn-icon btn-outline-secondary rounded-pill waves-effect">
                                                 <i class="ri-file-edit-line"></i>
                                             </button>
-                                        </a>
-                                        <div class="btn-group mx-2" role="group">
+                                        </a>';
+
+                    if($data->payment_status == 'succeeded') {
+                            $return .= '<div class="btn-group mx-2" role="group">
                                             <button id="btnGroupDrop1" type="button" class="btn btn-xs btn-outline-secondary rounded-pill dropdown-toggle waves-effect" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i class="ri-more-2-line ri-20px"></i>
                                             </button>
@@ -64,6 +66,9 @@ class PaymentController extends Controller
                                             </div>
                                         </div>
                                     </div>';
+                    }
+
+                    return $return;
                 })
 
                 ->editColumn('payment_type', function ($data) {
@@ -107,7 +112,7 @@ class PaymentController extends Controller
     /**
      * edit
      */
-    public function edit(Request $request): View
+    public function edit(Request $request)
     {
         $id = base64_decode($request->id);
 
@@ -121,6 +126,10 @@ class PaymentController extends Controller
                     ->leftjoin('platforms as pt', 'pt.id', 'cp.platform_id')
                     ->where(['p.id' => $id])
                     ->first();
+
+        if($data->payment_type != 'cash'){
+            return redirect()->route('payment.index')->with('error', 'You can not edit online payment.');
+        }
 
         $platforms = Platform::select('id', 'name')->where(['status' => 'active'])->get();
 
