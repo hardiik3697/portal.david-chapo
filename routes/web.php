@@ -110,6 +110,9 @@ Route::group(['middleware' => ['prevent-back-history']], function () {
                         Route::get('/edit/{id}', 'edit')->name('edit');
                         Route::get('/view/{id}', 'view')->name('view');
                         Route::post('/status', 'status')->name('status');
+                        Route::get('/search-user', 'searchUser')->name('search-user');
+                        Route::get('/get-user/{id?}', 'getUser')->name('get-user');
+                        Route::get('/get-username', 'getUsername')->name('get-username');
                     });
         /** Payments */
 

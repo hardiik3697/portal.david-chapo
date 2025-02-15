@@ -102,17 +102,21 @@ class CustomerController extends Controller
     {
         $id = base64_decode($request->id);
 
-        $data = Customer::where(['id' => $id])->first();
+        $data = Customer::select('id', 'name', 'phone', 'email', 'status', 'created_at')
+                            ->where(['id' => $id])
+                            ->first();
 
         if(!empty($data)){
-            $customerPlatform = DB::table('customers_platform as cp')
-                                    ->select('cp.username', 'cp.platform_id', 'p.name as platform')
-                                    ->leftJoin('platforms as p', 'p.id', '=', 'cp.platform_id')
-                                    ->where(['cp.customer_id' => $data->id])
-                                    ->get();
-
-            if(!empty($customerPlatform)){
-                $data->customerData = $customerPlatform;
+            $platform = DB::table('customers_platform as cp')
+                            ->select('cp.platform_id', 'cp.username', 'p.name as platform_name')
+                            ->leftJoin('platforms as p', 'p.id', '=', 'cp.platform_id')
+                            ->where(['cp.customer_id' => $data->id])
+                            ->get();
+        
+            if (!empty($platform)) {
+                $data->platform = $platform;
+            } else {
+                $data->platform = [];
             }
 
             return view('customers.view')->with(['data' => $data]);
