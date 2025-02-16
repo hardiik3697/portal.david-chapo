@@ -5,6 +5,7 @@
 @section('title') Payment @endsection
 
 @section('styles')
+<link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
 @endsection
 
 @section('content')
@@ -33,31 +34,28 @@
 
                         <div class="row g-6">
                             <div class="col-md-6">
-                                <div class="form-floating form-floating-outline ">
-                                    <input type="text" name="name" id="name" class="form-control" value="{{ $data->customer_name ?? '' }}">
-                                    <label for="name">Name</label>
-                                    <div class="error-name invalid-feedback mx-3"></div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-floating form-floating-outline ">
-                                    <input type="text" name="phone" id="phone" class="form-control" value="{{ $data->customer_phone ?? '' }}">
-                                    <label for="phone">Phone</label>
-                                    <div class="error-phone invalid-feedback mx-3"></div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-floating form-floating-outline ">
-                                    <input type="text" name="email" id="email" class="form-control" value="{{ $data->customer_email ?? '' }}">
+                                <div class="form-floating form-floating-outline">
+                                    <select id="email" name="email" class="select2 form-control" data-allow-clear="true">
+                                        @if(!empty($data->email))
+                                            <option value="{{ $data->email }}" selected>{{ $data->email }}</option>
+                                        @endif
+                                    </select>
                                     <label for="email">Email</label>
                                     <div class="error-email invalid-feedback mx-3"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating form-floating-outline ">
-                                    <input type="text" name="username" id="username" class="form-control" value="{{ $data->username ?? '' }}">
-                                    <label for="username">Username</label>
-                                    <div class="error-username invalid-feedback mx-3"></div>
+                                    <input type="text" name="name" id="name" class="form-control" value="{{ $data->name ?? '' }}">
+                                    <label for="name">Name</label>
+                                    <div class="error-name invalid-feedback mx-3"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating form-floating-outline ">
+                                    <input type="text" name="phone" id="phone" class="form-control" value="{{ $data->phone ?? '' }}">
+                                    <label for="phone">Phone</label>
+                                    <div class="error-phone invalid-feedback mx-3"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -68,8 +66,8 @@
                                             @foreach ($platforms as $row)
                                                 <?php
                                                     $selected = '';
-                                                    if(!empty($data))
-                                                        if($data->platform_id == $row->id)
+                                                    if (!empty($data))
+                                                        if ($data->platform_id == $row->id)
                                                             $selected = 'selected';
                                                 ?>
                                                 <option value="{{ $row->id }}" {{ $selected }}>{{ ucwords($row->name) }}</option>
@@ -80,6 +78,23 @@
                                     <div class="error-platform_id invalid-feedback mx-3"></div>
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <div class="form-floating form-floating-outline">
+                                    <select id="username" name="username" class="select2 form-select" data-allow-clear="true">
+                                        @if(!empty($data->username))
+                                            <option value="{{ $data->username }}" selected>{{ $data->username }}</option>
+                                        @endif
+                                    </select>
+                                    <label for="username">Username</label>
+                                </div>
+                            </div>
+                            <!-- <div class="col-md-6">
+                                <div class="form-floating form-floating-outline ">
+                                    <input type="text" name="username" id="username" class="form-control" value="{{ $data->username ?? '' }}">
+                                    <label for="username">Username</label>
+                                    <div class="error-username invalid-feedback mx-3"></div>
+                                </div>
+                            </div> -->
                             <div class="col-sm-6">
                                 <div class="form-floating form-floating-outline">
                                     <input type="number" name="amount" id="amount" class="form-control" value="{{ $data->amount ?? 0 }}">
@@ -88,28 +103,28 @@
                                 </div>
                             </div>
                             @if(!empty($data->id))
-                                <div class="col-sm-6">
-                                    <div class="form-floating form-floating-outline">
-                                        <select name="payment_status" id="payment_status" class="form-select" data-allow-clear="true">
-                                            <option value="">Payment Status</option>
-                                            <option value="pending" @if($data->payment_status == 'pending') selected @endif>Pending</option>
-                                            <option value="succeeded" @if($data->payment_status == 'succeeded') selected @endif>Succeeded</option>
-                                        </select>
-                                        <label for="payment_status">Payment Status</label>
-                                        <div class="error-payment_status invalid-feedback mx-3"></div>
-                                    </div>
+                            <div class="col-sm-6">
+                                <div class="form-floating form-floating-outline">
+                                    <select name="payment_status" id="payment_status" class="form-select" data-allow-clear="true">
+                                        <option value="">Payment Status</option>
+                                        <option value="pending" @if($data->payment_status == 'pending') selected @endif>Pending</option>
+                                        <option value="succeeded" @if($data->payment_status == 'succeeded') selected @endif>Succeeded</option>
+                                    </select>
+                                    <label for="payment_status">Payment Status</label>
+                                    <div class="error-payment_status invalid-feedback mx-3"></div>
                                 </div>
-                                <div class="col-sm-6">
-                                    <div class="form-floating form-floating-outline">
-                                        <select name="recharge_status" id="recharge_status" class="form-select" data-allow-clear="true">
-                                            <option value="">Payment Status</option>
-                                            <option value="pending" @if($data->recharge_status == 'pending') selected @endif>Pending</option>
-                                            <option value="done" @if($data->recharge_status == 'done') selected @endif>Done</option>
-                                        </select>
-                                        <label for="recharge_status">Recharge Status</label>
-                                        <div class="error-recharge_status invalid-feedback mx-3"></div>
-                                    </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-floating form-floating-outline">
+                                    <select name="recharge_status" id="recharge_status" class="form-select" data-allow-clear="true">
+                                        <option value="">Payment Status</option>
+                                        <option value="pending" @if($data->recharge_status == 'pending') selected @endif>Pending</option>
+                                        <option value="done" @if($data->recharge_status == 'done') selected @endif>Done</option>
+                                    </select>
+                                    <label for="recharge_status">Recharge Status</label>
+                                    <div class="error-recharge_status invalid-feedback mx-3"></div>
                                 </div>
+                            </div>
                             @endif
                             <div class="col-md-6">
                                 <button type="submit" class="btn rounded-pill btn-primary waves-effect waves-light mx-2">Submit</button>
@@ -125,5 +140,6 @@
 @endsection
 
 @section('scripts')
+<script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
 @php $pageJs = ['resources/js/project/payment/store.js']; @endphp
 @endsection

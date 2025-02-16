@@ -19,7 +19,7 @@ class IndexController extends Controller
 
     public function generate(Request $request){
         $data = [   
-            'link' => base64_encode(random_bytes(20)),
+            'link' => bin2hex(base64_encode(random_bytes(20))),
             'created_at' => date('Y-m-d H:i:s'),
             'created_by' => auth()->user()->id
         ];

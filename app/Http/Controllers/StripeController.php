@@ -3,17 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
-
-use Illuminate\Support\Facades\DB;
 use DataTables;
 
-use App\Http\Requests\CustomerRequest;
+use App\Http\Requests\StripeRequest;
+use App\Models\Stripe;
 
-use App\Models\Customer;
-
-class CustomerController extends Controller
+class StripeController extends Controller
 {
     /**
      * index
@@ -21,18 +19,18 @@ class CustomerController extends Controller
     public function index(Request $request): mixed
     {
         if ($request->ajax()) {
-            $data = Customer::orderBy('id', 'desc')->get();
+            $data = Stripe::orderBy('id', 'desc')->get();
 
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($data) {
                     return ' <div class="btn-group btn-sm">
-                                        <a href="' . route('customers.view', ['id' => base64_encode($data->id)]) . '" class="mx-2">
+                                        <a href="' . route('stripes.view', ['id' => base64_encode($data->id)]) . '" class="mx-2">
                                             <button type="button" class="btn btn-sm btn-icon btn-outline-secondary rounded-pill waves-effect">
                                                 <i class="ri-eye-line"></i>
                                             </button>
                                         </a>
-                                        <a href="' . route('customers.edit', ['id' => base64_encode($data->id)]) . '" class="mx-2">
+                                        <a href="' . route('stripes.edit', ['id' => base64_encode($data->id)]) . '" class="mx-2">
                                             <button type="button" class="btn btn-sm btn-icon btn-outline-secondary rounded-pill waves-effect">
                                                 <i class="ri-file-edit-line"></i>
                                             </button>
@@ -42,7 +40,7 @@ class CustomerController extends Controller
                                                 <i class="ri-more-2-line ri-20px"></i>
                                             </button>
                                             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1" style="">
-                                                <a class="dropdown-item changeStatus" href="javascript:;"  data-status="active" data-old_status="' . $data->status . '" data-id="' . base64_encode($data->id) . '">Active</a>
+                                                <a class="dropdown-item changeStatus" href="javascript:;" data-status="active" data-old_status="' . $data->status . '" data-id="' . base64_encode($data->id) . '">Active</a>
                                                 <a class="dropdown-item changeStatus" href="javascript:;" data-status="inactive" data-old_status="' . $data->status . '" data-id="' . base64_encode($data->id) . '">Inactive</a>
                                                 <a class="dropdown-item changeStatus" href="javascript:;" data-status="deleted" data-old_status="' . $data->status . '" data-id="' . base64_encode($data->id) . '">Delete</a>
                                             </div>
@@ -61,15 +59,15 @@ class CustomerController extends Controller
                         return '-';
                 })
 
-                ->editColumn('name', function ($data) {
-                    $url = route('customers.view', ['id' => base64_encode($data->id)]);
-                    return "<a href='".$url."'>".$data->name."</a>";
+                ->editColumn('email', function ($data) {
+                    $url = route('stripes.view', ['id' => base64_encode($data->id)]);
+                    return "<a href='".$url."'>".$data->email."</a>";
                 })
 
-                ->rawColumns(['action', 'status', 'name'])
+                ->rawColumns(['action', 'status', 'email'])
                 ->make(true);
         }
-        return view('customers.index');
+        return view('stripes.index');
     }
 
     /**
@@ -77,7 +75,7 @@ class CustomerController extends Controller
      */
     public function create(): View
     {
-        return view('customers.manage');
+        return view('stripes.manage');
     }
 
     /**
@@ -87,10 +85,10 @@ class CustomerController extends Controller
     {
         $id = base64_decode($request->id);
 
-        $data = Customer::where(['id' => $id])->first();
+        $data = Stripe::where(['id' => $id])->first();
 
         if(!empty($data))
-            return view('customers.manage')->with(['data' => $data]);
+            return view('stripes.manage')->with(['data' => $data]);
         else
             return redirect()->back()->with(['error' => 'Something went wrong. please try later!']);
     }
@@ -102,40 +100,25 @@ class CustomerController extends Controller
     {
         $id = base64_decode($request->id);
 
-        $data = Customer::select('id', 'name', 'phone', 'email', 'status', 'created_at')
-                            ->where(['id' => $id])
-                            ->first();
+        $data = Stripe::where(['id' => $id])->first();
 
-        if(!empty($data)){
-            $platform = DB::table('customers_platform as cp')
-                            ->select('cp.platform_id', 'cp.username', 'p.name as platform_name')
-                            ->leftJoin('platforms as p', 'p.id', '=', 'cp.platform_id')
-                            ->where(['cp.customer_id' => $data->id])
-                            ->get();
-        
-            if (!empty($platform)) {
-                $data->platform = $platform;
-            } else {
-                $data->platform = [];
-            }
-
-            return view('customers.view')->with(['data' => $data]);
-        }else{
+        if(!empty($data))
+            return view('stripes.view')->with(['data' => $data]);
+        else
             return redirect()->back()->with(['error' => 'Something went wrong. please try later!']);
-        }
     }
 
     /**
      * insert or update
      */
-    public function store(CustomerRequest $request): JsonResponse
+    public function store(StripeRequest $request): JsonResponse
     {
         $request = $request->all();
 
         $data = [
-            'name' => $request['name'],
-            'phone' => $request['phone'],
             'email' => $request['email'],
+            'publishable_key' => $request['publishable_key'],
+            'secret_key' => $request['secret_key']
         ];
 
         if (!empty($request['id'])) {
@@ -143,7 +126,7 @@ class CustomerController extends Controller
             $data['updated_at'] = date('Y-m-d H:i:s');
             $data['updated_by'] = auth()->user()->id;
 
-            $id = Customer::where('id', $request['id'])->update($data);
+            $id = Stripe::where('id', $request['id'])->update($data);
 
             if ($id)
                 return response()->json(['message' => 'Data updated successfully.', 'status' => 'success'], 200);
@@ -155,7 +138,7 @@ class CustomerController extends Controller
         $data['created_at'] = date('Y-m-d H:i:s');
         $data['created_by'] = auth()->user()->id;
 
-        $id = Customer::insertGetId($data);
+        $id = Stripe::insertGetId($data);
 
         if ($id)
             return response()->json(['message' => 'Data inserted successfully.', 'status' => 'success'], 200);
@@ -171,13 +154,13 @@ class CustomerController extends Controller
             $id = base64_decode($request->id);
             $status = $request->status;
 
-            $data = Customer::where(['id' => $id])->first();
+            $data = Stripe::where(['id' => $id])->first();
 
             if(!empty($data)){
                 if($status == 'delete'){
-                    $process = Customer::where(['id' => $id])->delete();
+                    $process = Stripe::where(['id' => $id])->delete();
                 }else{
-                    $process = Customer::where(['id' => $id])->update(['status' => $status, 'updated_by' => auth()->user()->id]);
+                    $process = Stripe::where(['id' => $id])->update(['status' => $status, 'updated_by' => auth()->user()->id]);
                 }
 
                 if($process)

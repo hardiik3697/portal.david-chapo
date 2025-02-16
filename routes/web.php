@@ -11,6 +11,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentOnlineController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\StripeController;
 
 /** Grouping under */
 Route::group(['middleware' => ['prevent-back-history']], function () {
@@ -70,6 +71,20 @@ Route::group(['middleware' => ['prevent-back-history']], function () {
                     });
         /** Users */
 
+        /** Stripe */
+            Route::controller(StripeController::class)
+                    ->prefix('/stripes')
+                    ->name('stripes.')
+                    ->group(function () {
+                        Route::any('/', 'index')->name('index');
+                        Route::get('/create', 'create')->name('create');
+                        Route::match(['post', 'patch'], '/store', 'store')->name('store');
+                        Route::get('/edit/{id}', 'edit')->name('edit');
+                        Route::get('/view/{id}', 'view')->name('view');
+                        Route::post('/status', 'status')->name('status');
+                    });
+        /** Stripe */
+
         /** Customers */
             Route::controller(CustomerController::class)
                     ->prefix('/customers')
@@ -95,6 +110,9 @@ Route::group(['middleware' => ['prevent-back-history']], function () {
                         Route::get('/edit/{id}', 'edit')->name('edit');
                         Route::get('/view/{id}', 'view')->name('view');
                         Route::post('/status', 'status')->name('status');
+                        Route::get('/search-user', 'searchUser')->name('search-user');
+                        Route::get('/get-user/{id?}', 'getUser')->name('get-user');
+                        Route::get('/get-username', 'getUsername')->name('get-username');
                     });
         /** Payments */
 

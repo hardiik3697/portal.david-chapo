@@ -71,13 +71,15 @@ class PaymentOnlineController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($data) {
-                    return ' <div class="btn-group btn-sm">
+                    $return = ' <div class="btn-group btn-sm">
                                         <a href="' . route('paymentOnline.view', ['id' => base64_encode($data->id)]) . '" class="mx-2">
                                             <button type="button" class="btn btn-sm btn-icon btn-outline-secondary rounded-pill waves-effect">
                                                 <i class="ri-eye-line"></i>
                                             </button>
-                                        </a>
-                                        <div class="btn-group mx-2" role="group">
+                                        </a>';
+
+                    if($data->payment_status == 'succeeded') {
+                                $return .= '<div class="btn-group mx-2" role="group">
                                             <button id="btnGroupDrop1" type="button" class="btn btn-xs btn-outline-secondary rounded-pill dropdown-toggle waves-effect" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i class="ri-more-2-line ri-20px"></i>
                                             </button>
@@ -86,7 +88,10 @@ class PaymentOnlineController extends Controller
                                                 <a class="dropdown-item changeStatus" href="javascript:;" data-status="done" data-old_status="' . $data->recharge_status . '" data-id="' . base64_encode($data->id) . '">Done</a>
                                             </div>
                                         </div>
-                                    </div>';
+                                    </div>';                
+                    }
+
+                    return $return;
                 })
 
                 ->editColumn('username', function ($data) {

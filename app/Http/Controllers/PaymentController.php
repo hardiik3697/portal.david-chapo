@@ -43,7 +43,7 @@ class PaymentController extends Controller
                         $disabled = 'disabled="disabled"';
                     }
 
-                    return ' <div class="btn-group btn-sm">
+                    $return = '<div class="btn-group btn-sm">
                                         <a href="' . route('payment.view', ['id' => base64_encode($data->id)]) . '" class="mx-2">
                                             <button type="button" class="btn btn-sm btn-icon btn-outline-secondary rounded-pill waves-effect">
                                                 <i class="ri-eye-line"></i>
@@ -53,8 +53,10 @@ class PaymentController extends Controller
                                             <button type="button" class="btn btn-sm btn-icon btn-outline-secondary rounded-pill waves-effect">
                                                 <i class="ri-file-edit-line"></i>
                                             </button>
-                                        </a>
-                                        <div class="btn-group mx-2" role="group">
+                                        </a>';
+
+                    if($data->payment_status == 'succeeded') {
+                            $return .= '<div class="btn-group mx-2" role="group">
                                             <button id="btnGroupDrop1" type="button" class="btn btn-xs btn-outline-secondary rounded-pill dropdown-toggle waves-effect" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                 <i class="ri-more-2-line ri-20px"></i>
                                             </button>
@@ -64,6 +66,9 @@ class PaymentController extends Controller
                                             </div>
                                         </div>
                                     </div>';
+                    }
+
+                    return $return;
                 })
 
                 ->editColumn('payment_type', function ($data) {
@@ -107,20 +112,24 @@ class PaymentController extends Controller
     /**
      * edit
      */
-    public function edit(Request $request): View
+    public function edit(Request $request)
     {
         $id = base64_decode($request->id);
 
         $data = DB::table('payments as p')
                     ->select('p.id', 'p.customer_id', 'p.customer_platform_id', 'p.amount', 'p.payment_id', 'p.client_secret',
-                    'p.payment_type', 'p.payment_type_id', 'p.payment_status', 'p.recharge_status', 'c.name as customer_name',
-                    'c.phone as customer_phone', 'c.email as customer_email', 'c.stripe_customer_id as customer_stripe_customer_id',
-                    'c.status as customer_status', 'cp.username', 'pt.name as platform_name', 'pt.id as platform_id')
+                    'p.payment_type', 'p.payment_type_id', 'p.payment_status', 'p.recharge_status', 'c.name as name',
+                    'c.phone as phone', 'c.email as email', 'c.stripe_customer_id as stripe_customer_id',
+                    'c.status as status', 'cp.username', 'pt.name as platform_name', 'pt.id as platform_id')
                     ->leftjoin('customers as c', 'c.id', 'p.customer_id')
                     ->leftjoin('customers_platform as cp', 'cp.id', 'p.customer_platform_id')
                     ->leftjoin('platforms as pt', 'pt.id', 'cp.platform_id')
                     ->where(['p.id' => $id])
                     ->first();
+
+        if($data->payment_type != 'cash'){
+            return redirect()->route('payment.index')->with('error', 'You can not edit online payment.');
+        }
 
         $platforms = Platform::select('id', 'name')->where(['status' => 'active'])->get();
 
@@ -171,39 +180,21 @@ class PaymentController extends Controller
                 $customer = Customer::where(['id' => $request['customer_id']])->update($customerData);
 
                 if($customer){
-                    $customerPlatform = CustomerPlatform::select('id')
-                                                ->where(['customer_id' => $request['customer_id'],
-                                                        'platform_id' => $request['platform_id'],
-                                                        'username' => $request['username']])
-                                                ->first();
+                    $customerPlatformData = [
+                        'customer_id' => $request['customer_id'],
+                        'platform_id' => $request['platform_id'],
+                        'username' => $request['username'],
+                        'status' => 'active',
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ];
 
-                    if(is_null($customerPlatform)){
-                        $customerPlatformData = [
-                            'customer_id' => $request['customer_id'],
-                            'platform_id' => $request['platform_id'],
-                            'username' => $request['username'],
-                            'status' => 'active',
-                            'created_at' => date('Y-m-d H:i:s'),
-                            'updated_at' => date('Y-m-d H:i:s')
-                        ];
-
-                        $customerPlatformId = CustomerPlatform::insertGetId($customerPlatformData);
-                    }else{
-                        $customerPlatformData = [
-                            'customer_id' => (int)$request['customer_id'],
-                            'platform_id' => (int)$request['platform_id'],
-                            'username' => $request['username'],
-                            'updated_at' => date('Y-m-d H:i:s'),
-                            'updated_by' => auth()->user()->id,
-                        ];
-
-                        $customerPlatformId = CustomerPlatform::where(['id' => $customerPlatform->id])->update($customerPlatformData);
-                    }
+                    $customerPlatformId = CustomerPlatform::where(['id' => $request['customer_platform_id']])->update($customerPlatformData);
 
                     if($customerPlatformId){
                         $payment = [
-                            'customer_id' => (int)$request['customer_id'],
-                            'customer_platform_id' => $customerPlatformId,
+                            'customer_id' => $request['customer_id'],
+                            'customer_platform_id' => $request['customer_platform_id'],
                             'amount' => $request['amount'],
                             'payment_status' => $request['payment_status'],
                             'recharge_status' => $request['recharge_status'],
@@ -335,5 +326,71 @@ class PaymentController extends Controller
         } else {
             return response()->json(['code' => 201]);
         }
+    }
+
+    /**
+     * search-user
+     */
+    public function searchUser(Request $request)
+    {
+        $data = [];
+
+        if($request->has('q')){
+            $search = $request->q;
+            $data = Customer::select('id', 'name', 'phone', 'email')
+                                ->where('name', 'like', '%' . $search . '%')
+                                ->get();
+        }
+
+        return response()->json($data);
+    }
+    
+    /**
+     * get-user
+     */
+    public function getUser(Request $request, $email = null)
+    {
+        $data = [];
+
+        if($email != null){
+            $email = base64_decode(urldecode($email));
+            $data = Customer::select('id', 'name', 'phone', 'email')
+                                ->where(['email' => $email])
+                                ->first();
+
+            if(!empty($data)){
+                $data = [
+                    'id' => $data->id,
+                    'name' => $data->name,
+                    'phone' => $data->phone,
+                    'email' => $data->email
+                ];
+            }
+        }
+
+        return response()->json($data);
+    }
+
+    /**
+     * get-username
+     */
+    public function getUsername(Request $request)
+    {
+        $data = [];
+
+        if($request->has('platform_id') && $request->has('email')){
+            $platform_id = $request->platform_id;
+            $email = $request->email;
+
+            $customer = Customer::select('id')->where(['email' => $email])->first();
+
+            if(!empty($customer)){
+                $data = CustomerPlatform::select('id', 'username')
+                                        ->where(['platform_id' => $platform_id, 'customer_id' => $customer->id])
+                                        ->get();
+            }
+        }
+
+        return response()->json($data);
     }
 }

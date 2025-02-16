@@ -5,6 +5,11 @@
 @section('title') Customer @endsection
 
 @section('styles')
+<style>
+    .card-min-height{
+        min-height: 300px;
+    }
+</style>
 @endsection
 
 @section('content')
@@ -49,30 +54,22 @@
                                 <option value="deleted" @if($data->status == 'deleted') selected @endif>Deleted</option>
                             </select>
                         </div>
-                        @if(!empty($data->customerData))
-                            <div class="row my-6">
-                                <div class="table-responsive text-nowrap px-6">
-                                    <table class="table border-top">
-                                        <thead>
-                                            <tr>
-                                                <th class="bg-transparent border-bottom">Platform Name</th>
-                                                <th class="bg-transparent border-bottom">Username</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="table-border-bottom-0">
-                                            @foreach($data->customerData as $row)
-                                                <tr>
-                                                    <td>{{ $row->platform ?? ''}}</td>
-                                                    <td>{{ $row->username ?? '' }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        @endif
-                        <div class="col-md-6">
-                            <a href="{{ route('customers.index') }}"><button type="button" class="btn rounded-pill btn-outline-secondary waves-effect">Back</button></a>
+                        <hr class="my-1">
+                        <div class="card-body">
+                            @if(!empty($data) && !empty($data->platform))
+                                @foreach($data->platform as $platform)
+                                    <div class="row">
+                                        <div class="col-sm-6 d-flex align-items-center mb-4">
+                                            <i class="ri-macbook-line ri-24px"></i>
+                                            <span class="fw-medium mx-2">:</span> <span>{{ $platform->platform_name ?? 'Unknown' }}</span>
+                                        </div>
+                                        <div class="col-sm-6 d-flex align-items-center mb-4">
+                                            <i class="ri-user-3-line ri-24px"></i>
+                                            <span class="fw-medium mx-2">:</span> <span>{{ $platform->username ?? 'JohnDoe' }}</span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -83,5 +80,4 @@
 @endsection
 
 @section('scripts')
-@php $pageJs = ['resources/js/project/customer/store.js']; @endphp
 @endsection
