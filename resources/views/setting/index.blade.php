@@ -41,12 +41,21 @@
                     <div class="row g-6">
                         @if(isset($data) && $data->isNotEmpty())
                             @foreach($data as $row)
+                                @if($row->key == 'DARK_LOGO' || $row->key == 'LIGHT_LOGO')
+                                    <div class="col-md-6">
+                                        <div class="form-floating form-floating-outline">
+                                            <input type="file" name="{{ $row->id }}" id="{{ $row['id'] }}" class="form-control" placeholder="" value="{{ asset('assets/img/logo'.$row['value']) }}">
+                                            <label for="{{ $row['id'] }}">{{ ucwords(strtolower(str_replace('_', ' ', $row->key))) }}</label>
+                                        </div>
+                                    </div>
+                                @else
                                 <div class="col-md-6">
                                     <div class="form-floating form-floating-outline">
                                         <input type="text" name="{{ $row->id }}" id="{{ $row['id'] }}" class="form-control" placeholder="" value="{{ $row['value'] }}">
                                         <label for="{{ $row['id'] }}">{{ strtoupper(str_replace('_', ' ', $row->key)) }}</label>
                                     </div>
                                 </div>
+                                @endif
                             @endforeach
                         @endif
                     </div>

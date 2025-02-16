@@ -17,7 +17,7 @@
 <script>
     const APP_URL = "{{ __settings('SITE_BACK_URL') }}";
     var token = "{{ csrf_token() }}";
-
+    
     $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
         jqXHR.setRequestHeader('X-CSRF-Token', token);
     });

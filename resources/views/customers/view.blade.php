@@ -20,28 +20,28 @@
             <div class="card mb-6">
                 <div class="card-body">
                     <div class="row g-6">
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="form-floating form-floating-outline">
                                 <input type="text" name="name" id="name" class="form-control" value="{{ $data->name ?? '' }}" disabled>
                                 <label for="name">Name</label>
                                 <div class="error-name invalid-feedback"></div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="form-floating form-floating-outline">
                                 <input type="email" name="email" id="email" class="form-control" value="{{ $data->email ?? '' }}" disabled>
                                 <label for="email">Email Address</label>
                                 <div class="error-email invalid-feedback"></div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="form-floating form-floating-outline">
                                 <input type="text" name="phone" id="phone" class="form-control" value="{{ $data->phone ?? '' }}" disabled>
                                 <label for="phone">Phone</label>
                                 <div class="error-phone invalid-feedback"></div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <select name="status" id="status" class="form-select" aria-label="Status" disabled>
                                 <option selected="">Select Status</option>
                                 <option value="active" @if($data->status == 'active') selected @endif>Active</option>
